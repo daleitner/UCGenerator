@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:UCGenerator"
         mc:Ignorable="d"
         Title="UC Generator" Height="350" Width="525" Background="{StaticResource DefaultBackground}">
-    <Grid>
+	<Grid>
         <Label Content="Projects Folder:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2"></Label>
 		<TextBox Text="{Binding Path=ProjectsFolder}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,7,2,2" Width="300"></TextBox>
 		<Label Content="Namespace:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,32,2,2"></Label>
@@ -15,7 +15,27 @@
 		<TextBox Text="{Binding Path=Name}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,67,2,2" Width="300"></TextBox>
 		<Button Content="Generate" Command="{Binding Path=GenerateCommand}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="410,2,2,2" Width="100" Height="90" FontSize="14" FontWeight="Bold"></Button>
 		<Button Content="+" Command="{Binding Path=AddCommand}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,100" Width="50" FontSize="14" FontWeight="Bold"></Button>
-		<StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="2,130,2,2" Orientation="Horizontal" CanHorizontallyScroll="True">
-		</StackPanel>
+		<Button Content="-" Command="{Binding Path=RemoveCommand}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,100" Width="50" FontSize="14" FontWeight="Bold"></Button>
+		<ListBox VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="250" ItemsSource="{Binding Path=Controls}" SelectedItem="{Binding Path=SelectedControl}"  Margin="2,130,2,2">
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<Label Content="Type:" Margin="10,0,0,0"></Label>
+						<ComboBox ItemsSource="{Binding DataContext.Types, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Center" Width="70" SelectedItem="{Binding Path=Type}"></ComboBox>
+						<Label Content="Name:"></Label>
+						<TextBox Text="{Binding Path=PropertyName}" VerticalAlignment="Center" Width="70"></TextBox>
+					</StackPanel>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		<ItemsControl VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="200" ItemsSource="{Binding Path=Bindings}" Margin="270,130,2,2">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Horizontal">
+						<CheckBox Content="{Binding Path=PropertyName}" IsChecked="{Binding Path=IsBound}"></CheckBox>
+					</StackPanel>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
     </Grid>
 </Window>

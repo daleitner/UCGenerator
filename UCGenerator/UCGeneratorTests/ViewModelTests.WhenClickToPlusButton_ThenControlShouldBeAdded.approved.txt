@@ -1,0 +1,2 @@
+﻿Controls count before: 0
+Controls count now:1
