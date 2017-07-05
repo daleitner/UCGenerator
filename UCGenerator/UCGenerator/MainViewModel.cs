@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Base;
+using UCGenerator.Services;
 
 namespace UCGenerator
 {
@@ -17,11 +18,12 @@ namespace UCGenerator
 		
 		private ObservableCollection<WPFControl> controls;
 		private WPFControl selectedControl;
-		private RelayCommand createCommand;
+		private RelayCommand generateCommand;
 		private RelayCommand addCommand;
 		private RelayCommand removeCommand;
-		public MainViewModel()
+		public MainViewModel(IDataService dataService)
 		{
+			this.projectsFolder = dataService.GetDefaultProjectPath();
 			this.controls = new ObservableCollection<WPFControl>();
 		}
 
@@ -65,6 +67,17 @@ namespace UCGenerator
 			}
 		}
 
+		public List<BindingModel> Bindings
+		{
+			get { return this.SelectedControl?.Bindings; }
+			set
+			{
+				if(this.SelectedControl != null)
+					this.SelectedControl.Bindings = value;
+				OnPropertyChanged(nameof(this.Bindings));
+			}
+		}
+
 		public ObservableCollection<WPFControl> Controls
 		{
 			get { return this.controls; }
@@ -75,9 +88,9 @@ namespace UCGenerator
 			}
 		}
 
-		public ICommand CreateCommand
+		public ICommand GenerateCommand
 		{
-			get { return this.createCommand ?? (this.createCommand = new RelayCommand(param => Create())); }
+			get { return this.generateCommand ?? (this.generateCommand = new RelayCommand(param => Generate())); }
 		}
 
 		public ICommand AddCommand
@@ -100,7 +113,7 @@ namespace UCGenerator
 			this.Controls.Add(new WPFControl());
 		}
 
-		private void Create()
+		private void Generate()
 		{
 		}
 	}
