@@ -4,8 +4,19 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UCGenerator"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:statics="clr-namespace:UCGenerator.Statics"
         mc:Ignorable="d"
         Title="UC Generator" Height="350" Width="525" Background="{StaticResource DefaultBackground}">
+	<Window.Resources>
+		<ObjectDataProvider MethodName="GetValues"
+		                    ObjectType="{x:Type sys:Enum}"
+		                    x:Key="ComponentTypes">
+			<ObjectDataProvider.MethodParameters>
+				<x:Type TypeName="statics:TypeEnum" />
+			</ObjectDataProvider.MethodParameters>
+		</ObjectDataProvider>
+	</Window.Resources>
 	<Grid>
         <Label Content="Projects Folder:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2"></Label>
 		<TextBox Text="{Binding Path=ProjectsFolder}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,7,2,2" Width="300"></TextBox>
@@ -21,7 +32,7 @@
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
 						<Label Content="Type:" Margin="10,0,0,0"></Label>
-						<ComboBox ItemsSource="{Binding DataContext.Types, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Center" Width="70" SelectedItem="{Binding Path=Type}"></ComboBox>
+						<ComboBox ItemsSource="{Binding Source={StaticResource ComponentTypes}}" VerticalAlignment="Center" Width="70" SelectedItem="{Binding Path=Type}"></ComboBox>
 						<Label Content="Name:"></Label>
 						<TextBox Text="{Binding Path=PropertyName}" VerticalAlignment="Center" Width="70"></TextBox>
 					</StackPanel>

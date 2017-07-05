@@ -14,8 +14,7 @@ namespace UCGenerator
 		private string projectsFolder;
 		private string nameSpace;
 		private string name;
-
-		private List<string> types;
+		
 		private ObservableCollection<WPFControl> controls;
 		private WPFControl selectedControl;
 		private RelayCommand createCommand;
@@ -23,20 +22,7 @@ namespace UCGenerator
 		private RelayCommand removeCommand;
 		public MainViewModel()
 		{
-			this.types = new List<string> {"Textbox", "Label", "Combobox"};
 			this.controls = new ObservableCollection<WPFControl>();
-		}
-		public List<string> Types
-		{
-			get
-			{
-				return this.types;
-			}
-			set
-			{
-				this.types = value;
-				OnPropertyChanged(nameof(this.Types));
-			}
 		}
 
 		public string NameSpace
