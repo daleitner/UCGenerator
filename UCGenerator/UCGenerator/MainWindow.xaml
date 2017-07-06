@@ -31,15 +31,15 @@
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
-						<Label Content="Type:" Margin="10,0,0,0"></Label>
-						<ComboBox ItemsSource="{Binding Source={StaticResource ComponentTypes}}" VerticalAlignment="Center" Width="70" SelectedItem="{Binding Path=Type}"></ComboBox>
+						<Label Content="Type:"></Label>
+						<ComboBox ItemsSource="{Binding Source={StaticResource ComponentTypes}}" VerticalAlignment="Center" Width="80" SelectedItem="{Binding Path=Type}"></ComboBox>
 						<Label Content="Name:"></Label>
 						<TextBox Text="{Binding Path=PropertyName}" VerticalAlignment="Center" Width="70"></TextBox>
 					</StackPanel>
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>
-		<ItemsControl VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="200" ItemsSource="{Binding Path=Bindings}" Margin="270,130,2,2">
+		<ItemsControl VerticalAlignment="Stretch" Background="{StaticResource GreenBackground}" HorizontalAlignment="Left" Width="200" BorderBrush="Black" BorderThickness="1" ItemsSource="{Binding Path=Bindings}" Margin="270,130,2,2">
 			<ItemsControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">

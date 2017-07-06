@@ -64,6 +64,7 @@ namespace UCGenerator
 			{
 				this.selectedControl = value;
 				OnPropertyChanged(nameof(this.SelectedControl));
+				this.Bindings = new List<BindingModel>(this.selectedControl.Bindings);
 			}
 		}
 
@@ -90,7 +91,7 @@ namespace UCGenerator
 
 		public ICommand GenerateCommand
 		{
-			get { return this.generateCommand ?? (this.generateCommand = new RelayCommand(param => Generate())); }
+			get { return this.generateCommand ?? (this.generateCommand = new RelayCommand(param => Generate(), param => CanGenerate())); }
 		}
 
 		public ICommand AddCommand
@@ -110,7 +111,21 @@ namespace UCGenerator
 
 		private void Add()
 		{
-			this.Controls.Add(new WPFControl());
+			var control = new WPFControl();
+			control.TypeChanged += Control_TypeChanged;
+			this.Controls.Add(control);
+		}
+
+		private void Control_TypeChanged(object sender, EventArgs e)
+		{
+			if (this.SelectedControl == null)
+				return;
+			this.Bindings = new List<BindingModel>(this.SelectedControl.Bindings);
+		}
+
+		private bool CanGenerate()
+		{
+			return this.Controls.Count > 0 && !this.Controls.Any(x => string.IsNullOrEmpty(x.PropertyName));
 		}
 
 		private void Generate()

@@ -9,12 +9,32 @@ namespace UCGenerator
 {
 	public class WPFControl
 	{
+		private TypeEnum type;
+		public event EventHandler TypeChanged = null;
 		public WPFControl()
 		{
-			this.Bindings = new List<BindingModel>();
+			UpdateBindings();
 		}
 		public string PropertyName { get; set; }
-		public TypeEnum Type { get; set; }
+
+		public TypeEnum Type
+		{
+			get { return this.type; }
+			set
+			{
+				this.type = value;
+				UpdateBindings();
+				TypeChanged?.Invoke(null, null);
+			}
+		}
+
 		public List<BindingModel> Bindings { get; set; }
+
+		private void UpdateBindings()
+		{
+			this.Bindings = Components.GetBindings(this.Type).Select(x => new BindingModel { PropertyName = x }).ToList();
+		}
 	}
+
+
 }

@@ -1,0 +1,3 @@
+﻿Binding[0] = Content
+Binding[1] = Command
+Binding[2] = Visibility

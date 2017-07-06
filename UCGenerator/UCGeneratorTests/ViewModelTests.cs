@@ -63,5 +63,37 @@ namespace UCGeneratorTests
 			var viewModel = new MainViewModel(this.dataService.Object);
 			this.dataService.Verify(x => x.GetDefaultProjectPath(), Times.Once, "Project path is not set");
 		}
+
+		[TestMethod]
+		public void WhenNoControls_GenerateButtonShouldBeDisabled()
+		{
+			var viewModel = new MainViewModel(this.dataService.Object);
+			Approvals.Verify("Button enabled = " + viewModel.GenerateCommand.CanExecute(null));
+		}
+
+		[TestMethod]
+		public void WhenNotAllControlsHaveGotName_GenerateButtonShouldBeDisabled()
+		{
+			var viewModel = new MainViewModel(this.dataService.Object);
+			viewModel.AddCommand.Execute(null);
+			viewModel.AddCommand.Execute(null);
+			viewModel.AddCommand.Execute(null);
+			viewModel.Controls[0].PropertyName = "control1";
+			viewModel.Controls[1].PropertyName = "control2";
+			Approvals.Verify("Button enabled = " + viewModel.GenerateCommand.CanExecute(null));
+		}
+
+		[TestMethod]
+		public void WhenAllControlsHaveGotName_GenerateButtonShouldBeEnabled()
+		{
+			var viewModel = new MainViewModel(this.dataService.Object);
+			viewModel.AddCommand.Execute(null);
+			viewModel.AddCommand.Execute(null);
+			viewModel.AddCommand.Execute(null);
+			viewModel.Controls[0].PropertyName = "control1";
+			viewModel.Controls[1].PropertyName = "control2";
+			viewModel.Controls[2].PropertyName = "control3";
+			Approvals.Verify("Button enabled = " + viewModel.GenerateCommand.CanExecute(null));
+		}
 	}
 }
