@@ -24,7 +24,8 @@ namespace UCGenerator
 		public MainWindow()
 		{
 			InitializeComponent();
-			this.DataContext = new MainViewModel(new DataService());
+			var dataService = new DataService();
+			this.DataContext = new MainViewModel(dataService, new GeneratorService(dataService));
 		}
 	}
 }

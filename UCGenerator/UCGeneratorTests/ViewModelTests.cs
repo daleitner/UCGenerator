@@ -18,11 +18,13 @@ namespace UCGeneratorTests
 	public class ViewModelTests
 	{
 		private Mock<IDataService> dataService;
+		private Mock<IGeneratorService> generatorService;
 
 		[TestInitialize]
 		public void Update()
 		{
 			this.dataService = new Mock<IDataService>();
+			this.generatorService = new Mock<IGeneratorService>();
 		}
 
 		[TestMethod]
@@ -35,7 +37,7 @@ namespace UCGeneratorTests
 		[TestMethod]
 		public void WhenClickToPlusButton_ThenControlShouldBeAdded()
 		{
-			var viewModel = new MainViewModel(this.dataService.Object);
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
 			viewModel.AddCommand.Execute(null);
 			Approvals.Verify("Controls count before: 0\nControls count now:" + viewModel.Controls.Count);
 		}
@@ -43,7 +45,7 @@ namespace UCGeneratorTests
 		[TestMethod]
 		public void WhenClickToMinusButton_ThenControlShouldBeRemoved()
 		{
-			var viewModel = new MainViewModel(this.dataService.Object);
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
 			viewModel.AddCommand.Execute(null);
 			viewModel.SelectedControl = viewModel.Controls.First();
 			viewModel.RemoveCommand.Execute(null);
@@ -53,28 +55,28 @@ namespace UCGeneratorTests
 		[TestMethod]
 		public void WhenNoControlSelected_ThenRemoveButtonShouldBeDisabled()
 		{
-			var viewModel = new MainViewModel(this.dataService.Object);
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
 			Approvals.Verify("Is Remove Button Enabled: " + viewModel.RemoveCommand.CanExecute(null));
 		}
 
 		[TestMethod]
 		public void WhenCreateMainViewModel_GetDefaultProjectPath()
 		{
-			var viewModel = new MainViewModel(this.dataService.Object);
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
 			this.dataService.Verify(x => x.GetDefaultProjectPath(), Times.Once, "Project path is not set");
 		}
 
 		[TestMethod]
 		public void WhenNoControls_GenerateButtonShouldBeDisabled()
 		{
-			var viewModel = new MainViewModel(this.dataService.Object);
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
 			Approvals.Verify("Button enabled = " + viewModel.GenerateCommand.CanExecute(null));
 		}
 
 		[TestMethod]
 		public void WhenNotAllControlsHaveGotName_GenerateButtonShouldBeDisabled()
 		{
-			var viewModel = new MainViewModel(this.dataService.Object);
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
 			viewModel.AddCommand.Execute(null);
 			viewModel.AddCommand.Execute(null);
 			viewModel.AddCommand.Execute(null);
@@ -84,16 +86,46 @@ namespace UCGeneratorTests
 		}
 
 		[TestMethod]
-		public void WhenAllControlsHaveGotName_GenerateButtonShouldBeEnabled()
+		public void WhenNamespaceIsEmpty_GenerateButtonShouldBeDisabled()
 		{
-			var viewModel = new MainViewModel(this.dataService.Object);
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
+			viewModel.AddCommand.Execute(null);
+			viewModel.Controls[0].PropertyName = "control1";
+			viewModel.Name = "bla.xaml";
+			Approvals.Verify("Button enabled = " + viewModel.GenerateCommand.CanExecute(null));
+		}
+
+		[TestMethod]
+		public void WhenNamesIsEmpty_GenerateButtonShouldBeDisabled()
+		{
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
+			viewModel.AddCommand.Execute(null);
+			viewModel.Controls[0].PropertyName = "control1";
+			viewModel.NameSpace = "bla";
+			Approvals.Verify("Button enabled = " + viewModel.GenerateCommand.CanExecute(null));
+		}
+
+		[TestMethod]
+		public void WhenAllControlsHaveGotNameAndNamespaceIsSet_GenerateButtonShouldBeEnabled()
+		{
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
 			viewModel.AddCommand.Execute(null);
 			viewModel.AddCommand.Execute(null);
 			viewModel.AddCommand.Execute(null);
 			viewModel.Controls[0].PropertyName = "control1";
 			viewModel.Controls[1].PropertyName = "control2";
 			viewModel.Controls[2].PropertyName = "control3";
+			viewModel.NameSpace = "bla";
+			viewModel.Name = "bla.xaml";
 			Approvals.Verify("Button enabled = " + viewModel.GenerateCommand.CanExecute(null));
+		}
+
+		[TestMethod]
+		public void WhenClickGenerate_ThenGeneratorServiceShouldGetCalled()
+		{
+			var viewModel = new MainViewModel(this.dataService.Object, this.generatorService.Object);
+			viewModel.GenerateCommand.Execute(null);
+			this.generatorService.Verify(x => x.Generate(viewModel.Controls, viewModel.ProjectsFolder, viewModel.NameSpace, viewModel.Name), Times.Once, "Generator was not Called");
 		}
 	}
 }

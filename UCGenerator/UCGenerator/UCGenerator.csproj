@@ -63,7 +63,9 @@
     </ApplicationDefinition>
     <Compile Include="BindingModel.cs" />
     <Compile Include="Services\DataService.cs" />
+    <Compile Include="Services\GeneratorService.cs" />
     <Compile Include="Services\IDataService.cs" />
+    <Compile Include="Services\IGeneratorService.cs" />
     <Compile Include="Statics\Components.cs" />
     <Compile Include="WPFControl.cs" />
     <Page Include="MainWindow.xaml">

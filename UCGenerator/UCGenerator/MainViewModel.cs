@@ -21,8 +21,11 @@ namespace UCGenerator
 		private RelayCommand generateCommand;
 		private RelayCommand addCommand;
 		private RelayCommand removeCommand;
-		public MainViewModel(IDataService dataService)
+		private IGeneratorService generatorService;
+
+		public MainViewModel(IDataService dataService, IGeneratorService generatorService)
 		{
+			this.generatorService = generatorService;
 			this.projectsFolder = dataService.GetDefaultProjectPath();
 			this.controls = new ObservableCollection<WPFControl>();
 		}
@@ -125,11 +128,13 @@ namespace UCGenerator
 
 		private bool CanGenerate()
 		{
-			return this.Controls.Count > 0 && !this.Controls.Any(x => string.IsNullOrEmpty(x.PropertyName));
+			return this.Controls.Count > 0 && !this.Controls.Any(x => string.IsNullOrEmpty(x.PropertyName))
+				&& !string.IsNullOrEmpty(this.NameSpace) && !string.IsNullOrEmpty(this.Name);
 		}
 
 		private void Generate()
 		{
+			this.generatorService.Generate(this.Controls, this.ProjectsFolder, this.NameSpace, this.Name);
 		}
 	}
 }

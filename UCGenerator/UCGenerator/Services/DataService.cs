@@ -15,5 +15,10 @@ namespace UCGenerator.Services
 			FileWorker.GetInstance(this.path, false);
 			return FileWorker.ReadFile(this.path);
 		}
+
+		public void CreateFile(string content, string path)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

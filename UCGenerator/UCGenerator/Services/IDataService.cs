@@ -9,5 +9,6 @@ namespace UCGenerator.Services
 	public interface IDataService
 	{
 		string GetDefaultProjectPath();
+		void CreateFile(string content, string path);
 	}
 }
