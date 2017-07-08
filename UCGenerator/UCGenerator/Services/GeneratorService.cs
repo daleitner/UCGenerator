@@ -56,6 +56,12 @@ namespace UCGenerator.Services
 			var horizontalAlignment = "Left";
 			var verticalAlignment = "Top";
 			var margin = "2,2,0,0";
+			var attributes = control.Bindings.Where(x => x.IsBound
+			&& x.PropertyName != BindingEnum.KeyBinding
+			&& x.PropertyName != BindingEnum.DoubleClick
+			&& x.PropertyName != BindingEnum.PropertyChangedTrigger)
+				.Select(x => x.PropertyName).ToList();
+
 			switch (control.Type)
 			{
 				case TypeEnum.TextBox:
@@ -89,17 +95,72 @@ namespace UCGenerator.Services
 					throw new ArgumentOutOfRangeException();
 			}
 
+
 			str += "Name=\"" + shortName + control.PropertyName + "\" ";
 			str += "HorizontalAlignment=\"" + horizontalAlignment + "\" ";
 			str += "VerticalAlignment=\"" + verticalAlignment + "\" ";
 			str += "Margin=\"" + margin + "\" ";
 			if (horizontalAlignment != "Stretch")
 				str += "Width=\"100\" ";
-			
-			 
-			str += shortEnd ? " />" : "</" + control.Type + ">";
+
+			attributes.ForEach(attr => str += attr + "=\"{Binding Path=" + GetNamePrefix(attr) + 
+			(attr == BindingEnum.SelectedItem ? control.PropertyName.Substring(0, control.PropertyName.Length-1) : control.PropertyName) + GetNamePostfix(attr) + 
+			(attr == BindingEnum.Text && control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.PropertyChangedTrigger) ? ", UpdateSourceTrigger=PropertyChanged" : "") + "}\" ");
+
+			if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.KeyBinding))
+			{
+				shortEnd = false;
+				str += ">\r\n";
+				str += "\t\t\t<" + control.Type + ".InputBindings>\r\n";
+				str += "\t\t\t\t<KeyBinding Key=\"Enter\", Command=\"{Binding Path=" + control.PropertyName + "EnterCommand}\" />\r\n";
+				if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.DoubleClick))
+					str += "\t\t\t\t<MouseBinding MouseAction=\"LeftDoubleClick\", Command=\"{Binding Path=" + control.PropertyName + "EnterCommand}\" />\r\n";
+				str += "\t\t\t</" + control.Type + ".InputBindings>\r\n";
+			}
+			else if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.DoubleClick))
+			{
+				shortEnd = false;
+				str += ">\r\n";
+				str += "\t\t\t<" + control.Type + ".InputBindings>\r\n";
+				str += "\t\t\t\t<MouseBinding MouseAction=\"LeftDoubleClick\", Command=\"{Binding Path=" + control.PropertyName + "DoubleClickCommand}\" />\r\n";
+				str += "\t\t\t</" + control.Type + ".InputBindings>\r\n";
+			}
+			str += shortEnd ? " />" : "\t\t</" + control.Type + ">";
 			str += "\r\n";
 			return str;
+		}
+
+
+		private string GetNamePrefix(BindingEnum attr)
+		{
+			if (attr == BindingEnum.IsEnabled)
+				return "Is";
+			if (attr == BindingEnum.SelectedItem)
+				return "Selected";
+			return "";
+		}
+
+		private string GetNamePostfix(BindingEnum attr)
+		{
+			switch(attr)
+			{
+				
+				case BindingEnum.IsEnabled:
+					return "Enabled";
+				case BindingEnum.Visibility:
+					return "Visibility";
+				case BindingEnum.Command:
+					return "Command";
+				case BindingEnum.KeyBinding:
+				case BindingEnum.Content:
+				case BindingEnum.ItemsSource:
+				case BindingEnum.SelectedItem:
+				case BindingEnum.Text:
+				case BindingEnum.PropertyChangedTrigger:
+					return "";
+				default:
+					throw new ArgumentOutOfRangeException(nameof(attr), attr, null);
+			}
 		}
 	}
 }

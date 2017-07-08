@@ -12,17 +12,31 @@ namespace UCGenerator.Statics
 		ContentPresenter,
 		ItemsControl
 	}
+
+	public enum BindingEnum
+	{
+		Text,
+		PropertyChangedTrigger,
+		IsEnabled,
+		Visibility,
+		KeyBinding,
+		Content,
+		ItemsSource,
+		SelectedItem,
+		DoubleClick,
+		Command
+	}
 	public class Components
 	{
-		private static readonly string[] TextBoxBindings = {"Text", "Property-Changed-Trigger", "IsEnabled", "Visibility", "Key-Binding"};
-		private static readonly string[] LabelBindings = {"Content", "IsEnabled", "Visibility"};
-		private static readonly string[] ComboBoxBindings = { "ItemsSource", "SelectedItem", "IsEnabled", "Visibility"};
-		private static readonly string[] ListBoxBindings = { "ItemsSource", "SelectedItem", "IsEnabled", "Visibility", "Key-Binding", "Doubleclick" };
-		private static readonly string[] ButtonBindings = { "Content", "Command", "Visibility" };
-		private static readonly string[] ContentPresenterBindings = { "Content", "Visibility" };
-		private static readonly string[] ItemsControlBindings = { "ItemsSource", "Visibility" };
+		private static readonly BindingEnum[] TextBoxBindings = {BindingEnum.Text, BindingEnum.PropertyChangedTrigger, BindingEnum.IsEnabled, BindingEnum.Visibility, BindingEnum.KeyBinding};
+		private static readonly BindingEnum[] LabelBindings = {BindingEnum.Content, BindingEnum.IsEnabled, BindingEnum.Visibility};
+		private static readonly BindingEnum[] ComboBoxBindings = { BindingEnum.ItemsSource, BindingEnum.SelectedItem, BindingEnum.IsEnabled, BindingEnum.Visibility };
+		private static readonly BindingEnum[] ListBoxBindings = { BindingEnum.ItemsSource, BindingEnum.SelectedItem, BindingEnum.IsEnabled, BindingEnum.Visibility, BindingEnum.KeyBinding, BindingEnum.DoubleClick };
+		private static readonly BindingEnum[] ButtonBindings = { BindingEnum.Content, BindingEnum.Command, BindingEnum.Visibility };
+		private static readonly BindingEnum[] ContentPresenterBindings = { BindingEnum.Content, BindingEnum.Visibility };
+		private static readonly BindingEnum[] ItemsControlBindings = { BindingEnum.ItemsSource, BindingEnum.Visibility };
 
-		public static string[] GetBindings(TypeEnum type)
+		public static BindingEnum[] GetBindings(TypeEnum type)
 		{
 			switch (type)
 			{
