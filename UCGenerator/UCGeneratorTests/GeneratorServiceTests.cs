@@ -33,9 +33,12 @@ namespace UCGeneratorTests
 			var nameSpace = "TestProject";
 			var name = "Person";
 			var controls = GenerateControls();
+			var path = service.GenerateAbsolutePath(projectFolder, nameSpace);
 			service.Generate(controls, projectFolder, nameSpace, name);
 			this.dataService.Verify(x => x.CreateFile(service.GenerateUserControl(controls, nameSpace, name), 
-				service.GenerateAbsolutePath(projectFolder, nameSpace) + name + "UserControl.xaml"), Times.Once, "Usercontrol was not created");
+				path + name + "UserControl.xaml"), Times.Once, "Usercontrol was not created");
+			this.dataService.Verify(x => x.CreateFile(service.GenerateBackgroundFile(nameSpace, name),
+				path + name + "UserControl.xaml.cs"), Times.Once, "Background File was not created");
 		}
 
 		[TestMethod]
@@ -65,6 +68,16 @@ namespace UCGeneratorTests
 			var nameSpace = "TestProject";
 			var name = "Person";
 			var file = service.GenerateUserControl(GenerateControls(), nameSpace, name);
+			Approvals.Verify(file);
+		}
+
+		[TestMethod]
+		public void VerifyGenerateBackgroundFile()
+		{
+			var service = new GeneratorService(this.dataService.Object);
+			var nameSpace = "TestProject";
+			var name = "Person";
+			var file = service.GenerateBackgroundFile(nameSpace, name);
 			Approvals.Verify(file);
 		}
 

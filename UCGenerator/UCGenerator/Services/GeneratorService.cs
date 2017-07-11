@@ -162,5 +162,24 @@ namespace UCGenerator.Services
 					throw new ArgumentOutOfRangeException(nameof(attr), attr, null);
 			}
 		}
+
+		public string GenerateBackgroundFile(string nameSpace, string name)
+		{
+			var file = "using System.Windows.Controls\r\n";
+			file += "namespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\t/// <summary>\r\n";
+			file += "\t/// Interactionlogic for " + name + "UserControl.xaml\r\n";
+			file += "\t/// </summary>\r\n";
+			file += "\tpublic partial class " + name + "UserControl\r\n";
+			file += "\t{\r\n";
+			file += "\t\tpublic " + name + "UserControl()\r\n";
+			file += "\t\t{\r\n";
+			file += "\t\t\tInitializeComponent();\r\n";
+			file += "\t\t}\r\n";
+			file += "\t}\r\n";
+			file += "}";
+			return file;
+		}
 	}
 }

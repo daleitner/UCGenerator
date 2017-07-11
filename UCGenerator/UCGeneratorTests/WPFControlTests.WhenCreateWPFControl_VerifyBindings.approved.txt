@@ -1,5 +1,5 @@
 ﻿Binding[0] = Text
-Binding[1] = Property-Changed-Trigger
+Binding[1] = PropertyChangedTrigger
 Binding[2] = IsEnabled
 Binding[3] = Visibility
-Binding[4] = Key-Binding
+Binding[4] = KeyBinding

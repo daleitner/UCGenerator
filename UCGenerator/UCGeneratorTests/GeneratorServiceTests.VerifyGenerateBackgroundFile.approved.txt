@@ -1,0 +1,14 @@
+﻿using System.Windows.Controls
+namespace TestProject
+{
+	/// <summary>
+	/// Interactionlogic for PersonUserControl.xaml
+	/// </summary>
+	public partial class PersonUserControl
+	{
+		public PersonUserControl()
+		{
+			InitializeComponent();
+		}
+	}
+}
