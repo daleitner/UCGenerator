@@ -181,5 +181,31 @@ namespace UCGenerator.Services
 			file += "}";
 			return file;
 		}
+
+		public string GenerateViewModel(List<WPFControl> controls, string nameSpace, string name)
+		{
+			var file = "";
+			var libraries = new List<string>
+			{
+				"System",
+				"System.Collections.Generic",
+				"System.Collections.ObjectModel",
+				"System.Linq",
+				"System.Text",
+				"System.Threading.Tasks",
+				"System.Windows.Input",
+				"Base"
+			};
+			libraries.ForEach(x => file += "using " + x + ";\r\n\r\n");
+
+			file += "namespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\tpublic class " + name + "ViewModel : ViewModelBase\r\n";
+			file += "\t{\r\n";
+
+			file += "\t}\r\n";
+			file += "}";
+		return file;
+		}
 	}
 }
