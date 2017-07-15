@@ -103,26 +103,18 @@ namespace UCGenerator.Services
 			if (horizontalAlignment != "Stretch")
 				str += "Width=\"100\" ";
 
-			attributes.ForEach(attr => str += attr + "=\"{Binding Path=" + GetNamePrefix(attr) + 
-			(attr == BindingEnum.SelectedItem ? control.PropertyName.Substring(0, control.PropertyName.Length-1) : control.PropertyName) + GetNamePostfix(attr) + 
+			attributes.ForEach(attr => str += attr + "=\"{Binding Path=" + GetPropertyName(control, attr)+ 
 			(attr == BindingEnum.Text && control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.PropertyChangedTrigger) ? ", UpdateSourceTrigger=PropertyChanged" : "") + "}\" ");
 
-			if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.KeyBinding))
+			if (control.Bindings.Any(x => x.IsBound && (x.PropertyName == BindingEnum.KeyBinding || x.PropertyName == BindingEnum.KeyBinding)))
 			{
 				shortEnd = false;
 				str += ">\r\n";
 				str += "\t\t\t<" + control.Type + ".InputBindings>\r\n";
-				str += "\t\t\t\t<KeyBinding Key=\"Enter\", Command=\"{Binding Path=" + control.PropertyName + "EnterCommand}\" />\r\n";
-				if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.DoubleClick))
-					str += "\t\t\t\t<MouseBinding MouseAction=\"LeftDoubleClick\", Command=\"{Binding Path=" + control.PropertyName + "EnterCommand}\" />\r\n";
-				str += "\t\t\t</" + control.Type + ".InputBindings>\r\n";
-			}
-			else if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.DoubleClick))
-			{
-				shortEnd = false;
-				str += ">\r\n";
-				str += "\t\t\t<" + control.Type + ".InputBindings>\r\n";
-				str += "\t\t\t\t<MouseBinding MouseAction=\"LeftDoubleClick\", Command=\"{Binding Path=" + control.PropertyName + "DoubleClickCommand}\" />\r\n";
+				if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.KeyBinding))
+					str += "\t\t\t\t<KeyBinding Key=\"Enter\", Command=\"{Binding Path=" + GetPropertyName(control, BindingEnum.KeyBinding) + "}\" />\r\n";
+				else
+					str += "\t\t\t\t<MouseBinding MouseAction=\"LeftDoubleClick\", Command=\"{Binding Path=" + GetPropertyName(control, BindingEnum.DoubleClick) + "}\" />\r\n";
 				str += "\t\t\t</" + control.Type + ".InputBindings>\r\n";
 			}
 			str += shortEnd ? " />" : "\t\t</" + control.Type + ">";
@@ -152,11 +144,14 @@ namespace UCGenerator.Services
 				case BindingEnum.Command:
 					return "Command";
 				case BindingEnum.KeyBinding:
+				case BindingEnum.DoubleClick:
+					return "EnterCommand";
 				case BindingEnum.Content:
 				case BindingEnum.ItemsSource:
 				case BindingEnum.SelectedItem:
 				case BindingEnum.Text:
 				case BindingEnum.PropertyChangedTrigger:
+				
 					return "";
 				default:
 					throw new ArgumentOutOfRangeException(nameof(attr), attr, null);
@@ -196,16 +191,131 @@ namespace UCGenerator.Services
 				"System.Windows.Input",
 				"Base"
 			};
-			libraries.ForEach(x => file += "using " + x + ";\r\n\r\n");
-
+			libraries.ForEach(x => file += "using " + x + ";\r\n");
+			file += "\r\n";
 			file += "namespace " + nameSpace + "\r\n";
 			file += "{\r\n";
 			file += "\tpublic class " + name + "ViewModel : ViewModelBase\r\n";
 			file += "\t{\r\n";
+			controls.ForEach(control => control.Bindings.Where(binding => binding.IsBound).ToList().ForEach(binding => file += "\t\t" + GenerateMember(control, binding.PropertyName) + "\r\n"));
+			file += "\t\tpublic " + name + "()\r\n";
+			file += "\t\t{\r\n";
+			controls.ForEach(x => x.Bindings.Where(y => y.IsBound && y.PropertyName == BindingEnum.ItemsSource).ToList().ForEach(y => file += "\t\t\tthis." + 
+			GetMemberName(x,y.PropertyName) + " = new ObservableCollection<object>();\r\n"));
+			file += "\t\t}\r\n\r\n";
+			controls.ForEach(control => control.Bindings.Where(x => x.IsBound).ToList().ForEach(binding => file += GenerateProperty(control, binding.PropertyName)));
 
 			file += "\t}\r\n";
 			file += "}";
 		return file;
+		}
+
+		private string GenerateMember(WPFControl control, BindingEnum binding)
+		{
+			if (binding == BindingEnum.PropertyChangedTrigger)
+				return "";
+			var member = "private ";
+			member += GetMemberType(control, binding) + " ";
+			member += GetMemberName(control, binding);
+			member += ";";
+			return member;
+		}
+
+		private string GenerateProperty(WPFControl control, BindingEnum binding)
+		{
+			var file = "";
+			var type = GetPropertyType(control, binding);
+			var memberName = GetMemberName(control, binding);
+			file += "\t\tpublic " + type + " " +
+						GetPropertyName(control, binding) + "\r\n";
+			file += "\t\t{\r\n";
+			file += "\t\t\tget\r\n";
+			file += "\t\t\t{\r\n";
+			if (type == "ICommand")
+			{
+				file += "\t\t\t\treturn this." + memberName +" ?? (this." + memberName + " = new RelayCommand(param => " + control.PropertyName + "()));\r\n";
+			}
+			else
+			{
+				file += "\t\t\t\treturn this." + memberName + "\r\n";
+			}
+			file += "\t\t\t}\r\n";
+			if (type != "ICommand")
+			{
+				file += "\t\t\tset\r\n";
+				file += "\t\t\t{\r\n";
+				file += "\t\t\t\tthis." + memberName + " = value;\r\n";
+				file += "\t\t\t\tOnPropertyChanged(nameof(this." + GetPropertyName(control, binding) + "));\r\n";
+				file += "\t\t\t}\r\n";
+			}
+			file += "\t\t}\r\n\r\n";
+			return file;
+		}
+
+		private string GetMemberName(WPFControl control, BindingEnum binding)
+		{
+			var membername = GetNamePrefix(binding) +
+							 (binding == BindingEnum.SelectedItem
+								 ? control.PropertyName.Substring(0, control.PropertyName.Length - 1)
+								 : control.PropertyName) + GetNamePostfix(binding);
+			return char.ToLower(membername[0]) + membername.Substring(1);
+		}
+
+		private string GetPropertyName(WPFControl control, BindingEnum binding)
+		{
+			var membername = GetNamePrefix(binding) +
+			                 (binding == BindingEnum.SelectedItem
+				                 ? control.PropertyName.Substring(0, control.PropertyName.Length - 1)
+				                 : control.PropertyName) + GetNamePostfix(binding);
+			return char.ToUpper(membername[0]) + membername.Substring(1);
+		}
+
+		private string GetPropertyType(WPFControl control, BindingEnum binding)
+		{
+			switch (binding)
+			{
+				case BindingEnum.Text:
+					return "string";
+				case BindingEnum.IsEnabled:
+					return "bool";
+				case BindingEnum.Visibility:
+					return "Visibility";
+				case BindingEnum.ItemsSource:
+					return "List<object>";
+				case BindingEnum.SelectedItem:
+					return "object";
+				case BindingEnum.Command:
+				case BindingEnum.KeyBinding:
+				case BindingEnum.DoubleClick:
+					return "ICommand";
+				case BindingEnum.Content:
+					return control.Type == TypeEnum.ContentPresenter ? "object" : "string";
+			}
+			return "";
+		}
+
+		private string GetMemberType(WPFControl control, BindingEnum binding)
+		{
+			switch (binding)
+			{
+				case BindingEnum.Text:
+					return "string";
+				case BindingEnum.IsEnabled:
+					return "bool";
+				case BindingEnum.Visibility:
+					return "Visibility";
+				case BindingEnum.ItemsSource:
+					return "List<object>";
+				case BindingEnum.SelectedItem:
+					return "object";
+				case BindingEnum.Command:
+				case BindingEnum.KeyBinding:
+				case BindingEnum.DoubleClick:
+					return "RelayCommand";
+				case BindingEnum.Content:
+					return control.Type == TypeEnum.ContentPresenter ? "object" : "string";
+			}
+			return "";
 		}
 	}
 }
