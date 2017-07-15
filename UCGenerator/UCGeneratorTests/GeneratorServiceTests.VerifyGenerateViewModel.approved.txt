@@ -1,1 +1,369 @@
-﻿ 
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Base;
+using System.Windows;
+
+namespace TestProject
+{
+	public class PersonViewModel : ViewModelBase
+	{
+		private string name;
+		
+		private bool isNameEnabled;
+		private Visibility nameVisibility;
+		private RelayCommand nameEnterCommand;
+		private string path;
+		private bool isPathEnabled;
+		private Visibility pathVisibility;
+		private List<object> players;
+		private object selectedPlayer;
+		private bool isPlayersEnabled;
+		private Visibility playersVisibility;
+		private RelayCommand playersEnterCommand;
+		private RelayCommand playersEnterCommand;
+		private string start;
+		private RelayCommand startCommand;
+		private Visibility startVisibility;
+		private List<object> colors;
+		private object selectedColor;
+		private bool isColorsEnabled;
+		private Visibility colorsVisibility;
+		private object image;
+		private Visibility imageVisibility;
+		private List<object> players;
+		private Visibility playersVisibility;
+		public Person()
+		{
+			this.players = new ObservableCollection<object>();
+			this.colors = new ObservableCollection<object>();
+			this.players = new ObservableCollection<object>();
+		}
+
+		public string Name
+		{
+			get
+			{
+				return this.name
+			}
+			set
+			{
+				this.name = value;
+				OnPropertyChanged(nameof(this.Name));
+			}
+		}
+
+		public  Name
+		{
+			get
+			{
+				return this.name
+			}
+			set
+			{
+				this.name = value;
+				OnPropertyChanged(nameof(this.Name));
+			}
+		}
+
+		public bool IsNameEnabled
+		{
+			get
+			{
+				return this.isNameEnabled
+			}
+			set
+			{
+				this.isNameEnabled = value;
+				OnPropertyChanged(nameof(this.IsNameEnabled));
+			}
+		}
+
+		public Visibility NameVisibility
+		{
+			get
+			{
+				return this.nameVisibility
+			}
+			set
+			{
+				this.nameVisibility = value;
+				OnPropertyChanged(nameof(this.NameVisibility));
+			}
+		}
+
+		public ICommand NameEnterCommand
+		{
+			get
+			{
+				return this.nameEnterCommand ?? (this.nameEnterCommand = new RelayCommand(param => Name()));
+			}
+		}
+
+		public string Path
+		{
+			get
+			{
+				return this.path
+			}
+			set
+			{
+				this.path = value;
+				OnPropertyChanged(nameof(this.Path));
+			}
+		}
+
+		public bool IsPathEnabled
+		{
+			get
+			{
+				return this.isPathEnabled
+			}
+			set
+			{
+				this.isPathEnabled = value;
+				OnPropertyChanged(nameof(this.IsPathEnabled));
+			}
+		}
+
+		public Visibility PathVisibility
+		{
+			get
+			{
+				return this.pathVisibility
+			}
+			set
+			{
+				this.pathVisibility = value;
+				OnPropertyChanged(nameof(this.PathVisibility));
+			}
+		}
+
+		public List<object> Players
+		{
+			get
+			{
+				return this.players
+			}
+			set
+			{
+				this.players = value;
+				OnPropertyChanged(nameof(this.Players));
+			}
+		}
+
+		public object SelectedPlayer
+		{
+			get
+			{
+				return this.selectedPlayer
+			}
+			set
+			{
+				this.selectedPlayer = value;
+				OnPropertyChanged(nameof(this.SelectedPlayer));
+			}
+		}
+
+		public bool IsPlayersEnabled
+		{
+			get
+			{
+				return this.isPlayersEnabled
+			}
+			set
+			{
+				this.isPlayersEnabled = value;
+				OnPropertyChanged(nameof(this.IsPlayersEnabled));
+			}
+		}
+
+		public Visibility PlayersVisibility
+		{
+			get
+			{
+				return this.playersVisibility
+			}
+			set
+			{
+				this.playersVisibility = value;
+				OnPropertyChanged(nameof(this.PlayersVisibility));
+			}
+		}
+
+		public ICommand PlayersEnterCommand
+		{
+			get
+			{
+				return this.playersEnterCommand ?? (this.playersEnterCommand = new RelayCommand(param => Players()));
+			}
+		}
+
+		public ICommand PlayersEnterCommand
+		{
+			get
+			{
+				return this.playersEnterCommand ?? (this.playersEnterCommand = new RelayCommand(param => Players()));
+			}
+		}
+
+		public string Start
+		{
+			get
+			{
+				return this.start
+			}
+			set
+			{
+				this.start = value;
+				OnPropertyChanged(nameof(this.Start));
+			}
+		}
+
+		public ICommand StartCommand
+		{
+			get
+			{
+				return this.startCommand ?? (this.startCommand = new RelayCommand(param => Start()));
+			}
+		}
+
+		public Visibility StartVisibility
+		{
+			get
+			{
+				return this.startVisibility
+			}
+			set
+			{
+				this.startVisibility = value;
+				OnPropertyChanged(nameof(this.StartVisibility));
+			}
+		}
+
+		public List<object> Colors
+		{
+			get
+			{
+				return this.colors
+			}
+			set
+			{
+				this.colors = value;
+				OnPropertyChanged(nameof(this.Colors));
+			}
+		}
+
+		public object SelectedColor
+		{
+			get
+			{
+				return this.selectedColor
+			}
+			set
+			{
+				this.selectedColor = value;
+				OnPropertyChanged(nameof(this.SelectedColor));
+			}
+		}
+
+		public bool IsColorsEnabled
+		{
+			get
+			{
+				return this.isColorsEnabled
+			}
+			set
+			{
+				this.isColorsEnabled = value;
+				OnPropertyChanged(nameof(this.IsColorsEnabled));
+			}
+		}
+
+		public Visibility ColorsVisibility
+		{
+			get
+			{
+				return this.colorsVisibility
+			}
+			set
+			{
+				this.colorsVisibility = value;
+				OnPropertyChanged(nameof(this.ColorsVisibility));
+			}
+		}
+
+		public object Image
+		{
+			get
+			{
+				return this.image
+			}
+			set
+			{
+				this.image = value;
+				OnPropertyChanged(nameof(this.Image));
+			}
+		}
+
+		public Visibility ImageVisibility
+		{
+			get
+			{
+				return this.imageVisibility
+			}
+			set
+			{
+				this.imageVisibility = value;
+				OnPropertyChanged(nameof(this.ImageVisibility));
+			}
+		}
+
+		public List<object> Players
+		{
+			get
+			{
+				return this.players
+			}
+			set
+			{
+				this.players = value;
+				OnPropertyChanged(nameof(this.Players));
+			}
+		}
+
+		public Visibility PlayersVisibility
+		{
+			get
+			{
+				return this.playersVisibility
+			}
+			set
+			{
+				this.playersVisibility = value;
+				OnPropertyChanged(nameof(this.PlayersVisibility));
+			}
+		}
+
+			private void NameEnter()
+			{
+			}
+
+			private void PlayersEnter()
+			{
+			}
+
+			private void PlayersEnter()
+			{
+			}
+
+			private void Start()
+			{
+			}
+
+	}
+}

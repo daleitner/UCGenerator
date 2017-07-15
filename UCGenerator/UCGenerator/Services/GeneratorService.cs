@@ -18,7 +18,13 @@ namespace UCGenerator.Services
 
 		public void Generate(IList<WPFControl> controls, string projectsFolder, string nameSpace, string name)
 		{
-			throw new NotImplementedException();
+			var cList = controls.ToList();
+			var path = GenerateAbsolutePath(projectsFolder, nameSpace);
+			this.dataService.CreateFile(GenerateUserControl(cList, nameSpace, name), path + name + "UserControl.xaml");
+			this.dataService.CreateFile(GenerateBackgroundFile(nameSpace, name), path + name + "UserControl.xaml.cs");
+			this.dataService.CreateFile(GenerateViewModel(cList, nameSpace, name), path + name + "ViewModel.cs");
+			this.dataService.CreateFile(GenerateControllerInterface(nameSpace, name), path + "I" + name + "Controller.cs");
+			this.dataService.CreateFile(GenerateController(nameSpace, name), path + name + "Controller.cs");
 		}
 
 		public string GenerateAbsolutePath(string projectFolder, string nameSpace)
@@ -191,6 +197,8 @@ namespace UCGenerator.Services
 				"System.Windows.Input",
 				"Base"
 			};
+			if(controls.Any(x => x.Bindings.Any(y => y.IsBound && y.PropertyName == BindingEnum.Visibility)))
+				libraries.Add("System.Windows");
 			libraries.ForEach(x => file += "using " + x + ";\r\n");
 			file += "\r\n";
 			file += "namespace " + nameSpace + "\r\n";
@@ -204,10 +212,53 @@ namespace UCGenerator.Services
 			GetMemberName(x,y.PropertyName) + " = new ObservableCollection<object>();\r\n"));
 			file += "\t\t}\r\n\r\n";
 			controls.ForEach(control => control.Bindings.Where(x => x.IsBound).ToList().ForEach(binding => file += GenerateProperty(control, binding.PropertyName)));
-
+			controls.ForEach(control => control.Bindings.Where(x => x.IsBound && (x.PropertyName == BindingEnum.Command ||
+			x.PropertyName == BindingEnum.DoubleClick || x.PropertyName == BindingEnum.KeyBinding
+			)).ToList().ForEach(binding => file += GenerateMethod(control, binding.PropertyName)));
 			file += "\t}\r\n";
 			file += "}";
 		return file;
+		}
+
+		public string GenerateControllerInterface(string nameSpace, string name)
+		{
+			var file = "namespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\tpublic interface I" + name + "Controller\r\n";
+			file += "\t{\r\n";
+			file += "\t}\r\n";
+			file += "}\r\n";
+			return file;
+		}
+
+		public string GenerateController(string nameSpace, string name)
+		{
+			var libraries = new List<string>
+			{
+				"System",
+				"System.Collections.Generic",
+				"System.Linq",
+				"System.Text",
+				"System.Threading.Tasks",
+			};
+
+			var file = "";
+			libraries.ForEach(x => file += "using " + x + ";\r\n");
+			file += "\r\nnamespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\tpublic class " + name + "Controller : I" + name + "Controller\r\n";
+			file += "\t{\r\n";
+			file += "\t}\r\n";
+			file += "}\r\n";
+			return file;
+		}
+
+		private string GenerateMethod(WPFControl control, BindingEnum propertyName)
+		{
+			var file = "\t\t\tprivate void " + control.PropertyName + (propertyName == BindingEnum.DoubleClick || propertyName == BindingEnum.KeyBinding ? "Enter" : "") + "()\r\n";
+			file += "\t\t\t{\r\n";
+			file += "\t\t\t}\r\n\r\n";
+			return file;
 		}
 
 		private string GenerateMember(WPFControl control, BindingEnum binding)
