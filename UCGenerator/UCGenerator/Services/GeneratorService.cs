@@ -43,7 +43,7 @@ namespace UCGenerator.Services
 			content += "             xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\"\r\n";
 			content += "             xmlns:d=\"http://schemas.microsoft.com/expression/blend/2008\"\r\n";
 			content += "             xmlns:local=\"clr-namespace:" + nameSpace + "\"\r\n";
-			content += "             mc: Ignorable=\"d\"\r\n";
+			content += "             mc:Ignorable=\"d\"\r\n";
 			content += "             d:DesignHeight = \"300\" d:DesignWidth=\"300\">\r\n";
 			content += "\t<Grid>\r\n";
 
@@ -52,6 +52,95 @@ namespace UCGenerator.Services
 			content += "\t</Grid>\r\n";
 			content += "</UserControl>";
 			return content;
+		}
+
+		public string GenerateBackgroundFile(string nameSpace, string name)
+		{
+			var file = "using System.Windows.Controls;\r\n";
+			file += "namespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\t/// <summary>\r\n";
+			file += "\t/// Interactionlogic for " + name + "UserControl.xaml\r\n";
+			file += "\t/// </summary>\r\n";
+			file += "\tpublic partial class " + name + "UserControl\r\n";
+			file += "\t{\r\n";
+			file += "\t\tpublic " + name + "UserControl()\r\n";
+			file += "\t\t{\r\n";
+			file += "\t\t\tInitializeComponent();\r\n";
+			file += "\t\t}\r\n";
+			file += "\t}\r\n";
+			file += "}";
+			return file;
+		}
+
+		public string GenerateViewModel(List<WPFControl> controls, string nameSpace, string name)
+		{
+			var file = "";
+			var libraries = new List<string>
+			{
+				"System",
+				"System.Collections.Generic",
+				"System.Collections.ObjectModel",
+				"System.Linq",
+				"System.Text",
+				"System.Threading.Tasks",
+				"System.Windows.Input",
+				"Base"
+			};
+			if(controls.Any(x => x.Bindings.Any(y => y.IsBound && y.PropertyName == BindingEnum.Visibility)))
+				libraries.Add("System.Windows");
+			libraries.ForEach(x => file += "using " + x + ";\r\n");
+			file += "\r\n";
+			file += "namespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\tpublic class " + name + "ViewModel : ViewModelBase\r\n";
+			file += "\t{\r\n";
+			controls.ForEach(control => control.Bindings.Where(binding => binding.IsBound).ToList().ForEach(binding => file += "\t\t" + GenerateMember(control, binding.PropertyName) + "\r\n"));
+			file += "\t\tpublic " + name + "ViewModel()\r\n";
+			file += "\t\t{\r\n";
+			controls.ForEach(x => x.Bindings.Where(y => y.IsBound && y.PropertyName == BindingEnum.ItemsSource).ToList().ForEach(y => file += "\t\t\tthis." + 
+			GetMemberName(x,y.PropertyName) + " = new ObservableCollection<object>();\r\n"));
+			file += "\t\t}\r\n\r\n";
+			controls.ForEach(control => control.Bindings.Where(x => x.IsBound).ToList().ForEach(binding => file += GenerateProperty(control, binding.PropertyName)));
+			controls.ForEach(control => control.Bindings.Where(x => x.IsBound && (x.PropertyName == BindingEnum.Command ||
+			x.PropertyName == BindingEnum.DoubleClick || x.PropertyName == BindingEnum.KeyBinding
+			)).ToList().ForEach(binding => file += GenerateMethod(control, binding.PropertyName)));
+			file += "\t}\r\n";
+			file += "}";
+		return file;
+		}
+
+		public string GenerateControllerInterface(string nameSpace, string name)
+		{
+			var file = "namespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\tpublic interface I" + name + "Controller\r\n";
+			file += "\t{\r\n";
+			file += "\t}\r\n";
+			file += "}\r\n";
+			return file;
+		}
+
+		public string GenerateController(string nameSpace, string name)
+		{
+			var libraries = new List<string>
+			{
+				"System",
+				"System.Collections.Generic",
+				"System.Linq",
+				"System.Text",
+				"System.Threading.Tasks",
+			};
+
+			var file = "";
+			libraries.ForEach(x => file += "using " + x + ";\r\n");
+			file += "\r\nnamespace " + nameSpace + "\r\n";
+			file += "{\r\n";
+			file += "\tpublic class " + name + "Controller : I" + name + "Controller\r\n";
+			file += "\t{\r\n";
+			file += "\t}\r\n";
+			file += "}\r\n";
+			return file;
 		}
 
 		private string GenerateControl(WPFControl control)
@@ -109,7 +198,7 @@ namespace UCGenerator.Services
 			if (horizontalAlignment != "Stretch")
 				str += "Width=\"100\" ";
 
-			attributes.ForEach(attr => str += attr + "=\"{Binding Path=" + GetPropertyName(control, attr)+ 
+			attributes.ForEach(attr => str += attr + "=\"{Binding Path=" + GetPropertyName(control, attr) +
 			(attr == BindingEnum.Text && control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.PropertyChangedTrigger) ? ", UpdateSourceTrigger=PropertyChanged" : "") + "}\" ");
 
 			if (control.Bindings.Any(x => x.IsBound && (x.PropertyName == BindingEnum.KeyBinding || x.PropertyName == BindingEnum.KeyBinding)))
@@ -118,9 +207,9 @@ namespace UCGenerator.Services
 				str += ">\r\n";
 				str += "\t\t\t<" + control.Type + ".InputBindings>\r\n";
 				if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.KeyBinding))
-					str += "\t\t\t\t<KeyBinding Key=\"Enter\", Command=\"{Binding Path=" + GetPropertyName(control, BindingEnum.KeyBinding) + "}\" />\r\n";
-				else
-					str += "\t\t\t\t<MouseBinding MouseAction=\"LeftDoubleClick\", Command=\"{Binding Path=" + GetPropertyName(control, BindingEnum.DoubleClick) + "}\" />\r\n";
+					str += "\t\t\t\t<KeyBinding Key=\"Enter\" Command=\"{Binding Path=" + GetPropertyName(control, BindingEnum.KeyBinding) + "}\" />\r\n";
+				if (control.Bindings.Any(x => x.IsBound && x.PropertyName == BindingEnum.DoubleClick))
+					str += "\t\t\t\t<MouseBinding MouseAction=\"LeftDoubleClick\" Command=\"{Binding Path=" + GetPropertyName(control, BindingEnum.DoubleClick) + "}\" />\r\n";
 				str += "\t\t\t</" + control.Type + ".InputBindings>\r\n";
 			}
 			str += shortEnd ? " />" : "\t\t</" + control.Type + ">";
@@ -140,9 +229,9 @@ namespace UCGenerator.Services
 
 		private string GetNamePostfix(BindingEnum attr)
 		{
-			switch(attr)
+			switch (attr)
 			{
-				
+
 				case BindingEnum.IsEnabled:
 					return "Enabled";
 				case BindingEnum.Visibility:
@@ -157,107 +246,18 @@ namespace UCGenerator.Services
 				case BindingEnum.SelectedItem:
 				case BindingEnum.Text:
 				case BindingEnum.PropertyChangedTrigger:
-				
+
 					return "";
 				default:
 					throw new ArgumentOutOfRangeException(nameof(attr), attr, null);
 			}
 		}
 
-		public string GenerateBackgroundFile(string nameSpace, string name)
-		{
-			var file = "using System.Windows.Controls\r\n";
-			file += "namespace " + nameSpace + "\r\n";
-			file += "{\r\n";
-			file += "\t/// <summary>\r\n";
-			file += "\t/// Interactionlogic for " + name + "UserControl.xaml\r\n";
-			file += "\t/// </summary>\r\n";
-			file += "\tpublic partial class " + name + "UserControl\r\n";
-			file += "\t{\r\n";
-			file += "\t\tpublic " + name + "UserControl()\r\n";
-			file += "\t\t{\r\n";
-			file += "\t\t\tInitializeComponent();\r\n";
-			file += "\t\t}\r\n";
-			file += "\t}\r\n";
-			file += "}";
-			return file;
-		}
-
-		public string GenerateViewModel(List<WPFControl> controls, string nameSpace, string name)
-		{
-			var file = "";
-			var libraries = new List<string>
-			{
-				"System",
-				"System.Collections.Generic",
-				"System.Collections.ObjectModel",
-				"System.Linq",
-				"System.Text",
-				"System.Threading.Tasks",
-				"System.Windows.Input",
-				"Base"
-			};
-			if(controls.Any(x => x.Bindings.Any(y => y.IsBound && y.PropertyName == BindingEnum.Visibility)))
-				libraries.Add("System.Windows");
-			libraries.ForEach(x => file += "using " + x + ";\r\n");
-			file += "\r\n";
-			file += "namespace " + nameSpace + "\r\n";
-			file += "{\r\n";
-			file += "\tpublic class " + name + "ViewModel : ViewModelBase\r\n";
-			file += "\t{\r\n";
-			controls.ForEach(control => control.Bindings.Where(binding => binding.IsBound).ToList().ForEach(binding => file += "\t\t" + GenerateMember(control, binding.PropertyName) + "\r\n"));
-			file += "\t\tpublic " + name + "()\r\n";
-			file += "\t\t{\r\n";
-			controls.ForEach(x => x.Bindings.Where(y => y.IsBound && y.PropertyName == BindingEnum.ItemsSource).ToList().ForEach(y => file += "\t\t\tthis." + 
-			GetMemberName(x,y.PropertyName) + " = new ObservableCollection<object>();\r\n"));
-			file += "\t\t}\r\n\r\n";
-			controls.ForEach(control => control.Bindings.Where(x => x.IsBound).ToList().ForEach(binding => file += GenerateProperty(control, binding.PropertyName)));
-			controls.ForEach(control => control.Bindings.Where(x => x.IsBound && (x.PropertyName == BindingEnum.Command ||
-			x.PropertyName == BindingEnum.DoubleClick || x.PropertyName == BindingEnum.KeyBinding
-			)).ToList().ForEach(binding => file += GenerateMethod(control, binding.PropertyName)));
-			file += "\t}\r\n";
-			file += "}";
-		return file;
-		}
-
-		public string GenerateControllerInterface(string nameSpace, string name)
-		{
-			var file = "namespace " + nameSpace + "\r\n";
-			file += "{\r\n";
-			file += "\tpublic interface I" + name + "Controller\r\n";
-			file += "\t{\r\n";
-			file += "\t}\r\n";
-			file += "}\r\n";
-			return file;
-		}
-
-		public string GenerateController(string nameSpace, string name)
-		{
-			var libraries = new List<string>
-			{
-				"System",
-				"System.Collections.Generic",
-				"System.Linq",
-				"System.Text",
-				"System.Threading.Tasks",
-			};
-
-			var file = "";
-			libraries.ForEach(x => file += "using " + x + ";\r\n");
-			file += "\r\nnamespace " + nameSpace + "\r\n";
-			file += "{\r\n";
-			file += "\tpublic class " + name + "Controller : I" + name + "Controller\r\n";
-			file += "\t{\r\n";
-			file += "\t}\r\n";
-			file += "}\r\n";
-			return file;
-		}
-
 		private string GenerateMethod(WPFControl control, BindingEnum propertyName)
 		{
-			var file = "\t\t\tprivate void " + control.PropertyName + (propertyName == BindingEnum.DoubleClick || propertyName == BindingEnum.KeyBinding ? "Enter" : "") + "()\r\n";
-			file += "\t\t\t{\r\n";
-			file += "\t\t\t}\r\n\r\n";
+			var file = "\t\tprivate void " + control.PropertyName + (propertyName == BindingEnum.DoubleClick || propertyName == BindingEnum.KeyBinding ? "Enter" : "") + "()\r\n";
+			file += "\t\t{\r\n";
+			file += "\t\t}\r\n\r\n";
 			return file;
 		}
 
@@ -288,7 +288,7 @@ namespace UCGenerator.Services
 			}
 			else
 			{
-				file += "\t\t\t\treturn this." + memberName + "\r\n";
+				file += "\t\t\t\treturn this." + memberName + ";\r\n";
 			}
 			file += "\t\t\t}\r\n";
 			if (type != "ICommand")

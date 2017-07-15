@@ -4,19 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:TestProject"
-             mc: Ignorable="d"
+             mc:Ignorable="d"
              d:DesignHeight = "300" d:DesignWidth="300">
 	<Grid>
 		<TextBox Name="tbName" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0" Width="100" Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding Path=IsNameEnabled}" Visibility="{Binding Path=NameVisibility}" >
 			<TextBox.InputBindings>
-				<KeyBinding Key="Enter", Command="{Binding Path=NameEnterCommand}" />
+				<KeyBinding Key="Enter" Command="{Binding Path=NameEnterCommand}" />
 			</TextBox.InputBindings>
 		</TextBox>
 		<Label Name="lPath" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0" Width="100" Content="{Binding Path=Path}" IsEnabled="{Binding Path=IsPathEnabled}" Visibility="{Binding Path=PathVisibility}"  />
 		<ListBox Name="lbPlayers" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="2,2,0,0" ItemsSource="{Binding Path=Players}" SelectedItem="{Binding Path=SelectedPlayer}" IsEnabled="{Binding Path=IsPlayersEnabled}" Visibility="{Binding Path=PlayersVisibility}" >
 			<ListBox.InputBindings>
-				<KeyBinding Key="Enter", Command="{Binding Path=PlayersEnterCommand}" />
-				<MouseBinding MouseAction="LeftDoubleClick", Command="{Binding Path=PlayersEnterCommand}" />
+				<KeyBinding Key="Enter" Command="{Binding Path=PlayersEnterCommand}" />
+				<MouseBinding MouseAction="LeftDoubleClick" Command="{Binding Path=PlayersEnterCommand}" />
 			</ListBox.InputBindings>
 		</ListBox>
 		<Button Name="btnStart" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0" Width="100" Content="{Binding Path=Start}" Command="{Binding Path=StartCommand}" Visibility="{Binding Path=StartVisibility}"  />

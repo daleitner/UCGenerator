@@ -18,7 +18,8 @@ namespace UCGenerator.Services
 
 		public void CreateFile(string content, string path)
 		{
-			throw new NotImplementedException();
+			var worker = FileWorker.GetInstance(path, true);
+			worker.WriteLine(content);
 		}
 	}
 }

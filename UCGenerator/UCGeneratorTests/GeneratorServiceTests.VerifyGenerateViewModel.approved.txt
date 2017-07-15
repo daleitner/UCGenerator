@@ -37,7 +37,7 @@ namespace TestProject
 		private Visibility imageVisibility;
 		private List<object> players;
 		private Visibility playersVisibility;
-		public Person()
+		public PersonViewModel()
 		{
 			this.players = new ObservableCollection<object>();
 			this.colors = new ObservableCollection<object>();
@@ -48,7 +48,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.name
+				return this.name;
 			}
 			set
 			{
@@ -61,7 +61,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.name
+				return this.name;
 			}
 			set
 			{
@@ -74,7 +74,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.isNameEnabled
+				return this.isNameEnabled;
 			}
 			set
 			{
@@ -87,7 +87,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.nameVisibility
+				return this.nameVisibility;
 			}
 			set
 			{
@@ -108,7 +108,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.path
+				return this.path;
 			}
 			set
 			{
@@ -121,7 +121,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.isPathEnabled
+				return this.isPathEnabled;
 			}
 			set
 			{
@@ -134,7 +134,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.pathVisibility
+				return this.pathVisibility;
 			}
 			set
 			{
@@ -147,7 +147,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.players
+				return this.players;
 			}
 			set
 			{
@@ -160,7 +160,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.selectedPlayer
+				return this.selectedPlayer;
 			}
 			set
 			{
@@ -173,7 +173,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.isPlayersEnabled
+				return this.isPlayersEnabled;
 			}
 			set
 			{
@@ -186,7 +186,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.playersVisibility
+				return this.playersVisibility;
 			}
 			set
 			{
@@ -215,7 +215,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.start
+				return this.start;
 			}
 			set
 			{
@@ -236,7 +236,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.startVisibility
+				return this.startVisibility;
 			}
 			set
 			{
@@ -249,7 +249,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.colors
+				return this.colors;
 			}
 			set
 			{
@@ -262,7 +262,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.selectedColor
+				return this.selectedColor;
 			}
 			set
 			{
@@ -275,7 +275,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.isColorsEnabled
+				return this.isColorsEnabled;
 			}
 			set
 			{
@@ -288,7 +288,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.colorsVisibility
+				return this.colorsVisibility;
 			}
 			set
 			{
@@ -301,7 +301,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.image
+				return this.image;
 			}
 			set
 			{
@@ -314,7 +314,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.imageVisibility
+				return this.imageVisibility;
 			}
 			set
 			{
@@ -327,7 +327,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.players
+				return this.players;
 			}
 			set
 			{
@@ -340,7 +340,7 @@ namespace TestProject
 		{
 			get
 			{
-				return this.playersVisibility
+				return this.playersVisibility;
 			}
 			set
 			{
@@ -349,21 +349,21 @@ namespace TestProject
 			}
 		}
 
-			private void NameEnter()
-			{
-			}
+		private void NameEnter()
+		{
+		}
 
-			private void PlayersEnter()
-			{
-			}
+		private void PlayersEnter()
+		{
+		}
 
-			private void PlayersEnter()
-			{
-			}
+		private void PlayersEnter()
+		{
+		}
 
-			private void Start()
-			{
-			}
+		private void Start()
+		{
+		}
 
 	}
 }
