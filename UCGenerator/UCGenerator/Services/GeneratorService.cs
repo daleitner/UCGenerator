@@ -101,7 +101,7 @@ namespace UCGenerator.Services
 			file += "\t\t{\r\n";
 			file += "\t\t\tthis.controller = controller;\r\n";
 			controls.ForEach(x => x.Bindings.Where(y => y.IsBound && y.PropertyName == BindingEnum.ItemsSource).ToList().ForEach(y => file += "\t\t\tthis." + 
-			GetMemberName(x,y.PropertyName) + " = new ObservableCollection<object>();\r\n"));
+			GetMemberName(x,y.PropertyName) + " = new List<object>();\r\n"));
 			file += "\t\t}\r\n\r\n";
 			controls.ForEach(control => control.Bindings.Where(x => x.IsBound).ToList().ForEach(binding => file += GenerateProperty(control, binding.PropertyName)));
 			controls.ForEach(control => control.Bindings.Where(x => x.IsBound && (x.PropertyName == BindingEnum.Command ||

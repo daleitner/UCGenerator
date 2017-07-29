@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using ApprovalTests;
 using ApprovalTests.Reporters;
 using ApprovalTests.Wpf;
@@ -28,9 +29,17 @@ namespace UCGeneratorTests
 		}
 
 		[TestMethod]
+		[UseReporter(typeof(TortoiseImageDiffReporter))]
 		public void VerifyDefaultGui()
 		{
-			var window = new MainWindow();
+			var window = new MainWindow
+			{
+				Resources =
+					new ResourceDictionary()
+					{
+						Source = new Uri("pack://application:,,,/UCGenerator;component/Resources/Styles.xaml")
+					}
+			};
 			WpfApprovals.Verify(window);
 		}
 

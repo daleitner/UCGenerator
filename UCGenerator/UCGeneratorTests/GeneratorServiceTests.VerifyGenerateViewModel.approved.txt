@@ -41,9 +41,9 @@ namespace TestProject
 		public PersonViewModel(IPersonController controller)
 		{
 			this.controller = controller;
-			this.players = new ObservableCollection<object>();
-			this.colors = new ObservableCollection<object>();
-			this.players = new ObservableCollection<object>();
+			this.players = new List<object>();
+			this.colors = new List<object>();
+			this.players = new List<object>();
 		}
 
 		public string Name
