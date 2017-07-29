@@ -96,8 +96,10 @@ namespace UCGenerator.Services
 			file += "\tpublic class " + name + "ViewModel : ViewModelBase\r\n";
 			file += "\t{\r\n";
 			controls.ForEach(control => control.Bindings.Where(binding => binding.IsBound).ToList().ForEach(binding => file += "\t\t" + GenerateMember(control, binding.PropertyName) + "\r\n"));
-			file += "\t\tpublic " + name + "ViewModel()\r\n";
+			file += "\t\tprivate readonly I" + name + "Controller controller;\r\n";
+			file += "\t\tpublic " + name + "ViewModel(I" + name + "Controller controller)\r\n";
 			file += "\t\t{\r\n";
+			file += "\t\t\tthis.controller = controller;\r\n";
 			controls.ForEach(x => x.Bindings.Where(y => y.IsBound && y.PropertyName == BindingEnum.ItemsSource).ToList().ForEach(y => file += "\t\t\tthis." + 
 			GetMemberName(x,y.PropertyName) + " = new ObservableCollection<object>();\r\n"));
 			file += "\t\t}\r\n\r\n";

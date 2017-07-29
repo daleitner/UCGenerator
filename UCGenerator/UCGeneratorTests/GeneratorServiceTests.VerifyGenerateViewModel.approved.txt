@@ -37,8 +37,10 @@ namespace TestProject
 		private Visibility imageVisibility;
 		private List<object> players;
 		private Visibility playersVisibility;
-		public PersonViewModel()
+		private readonly IPersonController controller;
+		public PersonViewModel(IPersonController controller)
 		{
+			this.controller = controller;
 			this.players = new ObservableCollection<object>();
 			this.colors = new ObservableCollection<object>();
 			this.players = new ObservableCollection<object>();
